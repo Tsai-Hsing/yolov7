@@ -222,7 +222,11 @@ def mainPredict(image, path, modelName, userDict , graph, sess):
         #imagepath = os.path.abspath(os.getcwd()) + '/original.' + image.format.lower()
         #print(imagepath)
         os.system('rm -rf ' + path.decode() + '/test.cache')
-        image.save(imagepath)
+        os.system('rm -rf ' + path.decode() + '/test.txt')
+	fin = open(path.decode() + '/test.txt', 'wt')
+        fin.write(imagepath)
+        fin.close()
+	image.save(imagepath)
         r, alltype = detect(lib, net, meta, niou, nc, mdata, bytes(imagepath, 'ascii'))   
         infod = {}
         at = []
