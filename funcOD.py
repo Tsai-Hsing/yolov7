@@ -276,7 +276,7 @@ def mainPreLoadModel(path):
                 modelname = os.path.splitext(filename)[0]
         fin = open(path.decode() + '/yolov7.yaml', 'rt')
         data = fin.read()
-        data = data.replace('/mnt/2c67bd82-3031-40f8-8f53-58564ba23509/Graphics/yolo/test', path.decode()).replace('cfg/' + modelname.decode(),'')
+        data = data.replace('./testfolder', path.decode())
         fin.close()
         fin = open(path.decode() + '/yolov7.yaml', 'wt')
         fin.write(data)
