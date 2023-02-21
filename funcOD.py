@@ -274,10 +274,10 @@ def mainPreLoadModel(path):
         for filename in os.listdir(path):
             if filename.lower().endswith(b'.pt'):
                 modelname = os.path.splitext(filename)[0]
-        fin = open(path.decode() + '/yolov7.yaml', 'rt')
-        data = fin.read()
-        data = data.replace('./testfolder', path.decode())
-        fin.close()
+	fin = open(path.decode() + '/testfolder/yolov7.yaml', 'rt') 
+	data = fin.read() 
+	data = data = data.replace('./testfolder', path.decode()) 
+	fin.close()
         fin = open(path.decode() + '/yolov7.yaml', 'wt')
         fin.write(data)
         fin.close()
