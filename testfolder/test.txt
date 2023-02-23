@@ -1,1 +1,1 @@
-./testfolder/original.png
+./original.png
