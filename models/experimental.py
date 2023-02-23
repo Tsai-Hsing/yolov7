@@ -246,7 +246,6 @@ class End2End(nn.Module):
 
 def attempt_load(weights, map_location=None):
     # Loads an ensemble of models weights=[a,b,c] or a single model weights=[a] or weights=a
-    weights = '/content/yolov7_rex/testfolder/best.pt'
     model = Ensemble()
     print(weights)
     for w in weights if isinstance(weights, list) else [weights]:
