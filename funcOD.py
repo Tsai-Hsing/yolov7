@@ -3,7 +3,7 @@ import math
 import random
 import os
 import json
-import cv2
+import cv2 
 from PIL import Image
 import argparse
 from pathlib import Path
@@ -101,14 +101,14 @@ def detect(lib, net, meta, niou, nc, data, imgsz, image, thresh=.5, hier_thresh=
             # Compute loss
             if compute_loss:
                 loss += compute_loss([x.float() for x in train_out], targets)[1][:3]  # box, obj, cls
-
+            
             # Run NMS
             targets[:, 2:] *= torch.Tensor([width, height, width, height]).to(device)  # to pixels
             lb = [targets[targets[:, 0] == i, 1:] for i in range(nb)] if save_hybrid else []  # for autolabelling
             t = time_synchronized()
             out = non_max_suppression(out, conf_thres=conf_thres, iou_thres=iou_thres, labels=lb, multi_label=True)
             t1 += time_synchronized() - t
-
+        
         alltype = []
         res = []
         returnval = output_to_target(out)
@@ -135,14 +135,16 @@ def mainPredict(image, path, modelName, userDict , graph, sess):
         niou = userDict['niou']
         nc = userDict['nc']
         mdata = userDict['data']
-        imagepath = path.decode() + '/testfolder/original.' + userDict["FileExtension"]#image.format.lower()
+        #imagepath = path.decode() + '/testfolder/original.' + userDict["FileExtension"]#image.format.lower()
+        imagepath = os.path.join(path.decode(), "testfolder", "original." + userDict["FileExtension"])
         #imagepath = os.path.abspath(os.getcwd()) + '/original.' + image.format.lower()
         #print(imagepath)
-        os.system('rm -rf ' + path.decode() + '/testfolder/test.cache')
+        #os.system('rm -rf ' + path.decode() + '/testfolder/test.cache')
+        os.system('rm -rf ' + os.path.join(path.decode(), 'testfolder', 'test.cache'))
         image.save(imagepath)
         print(imagepath)
         imgsz = cv2.imread(imagepath).shape[1]
-        r, alltype = detect(lib, net, meta, niou, nc, mdata, imgsz, bytes(imagepath, 'ascii'))
+        r, alltype = detect(lib, net, meta, niou, nc, mdata, imgsz, bytes(imagepath, 'ascii'))   
         infod = {}
         at = []
         for cls, score, bbox in r:
@@ -186,14 +188,17 @@ def mainPreLoadModel(path):
     try:
         path = bytes(path, 'ascii')
         modelname = ''
-        for filename in os.listdir(path + b'/testfolder/'):
+        for filename in os.listdir(os.path.join(path, b'testfolder')):
             if filename.lower().endswith(b'.pt'):
                 modelname = os.path.splitext(filename)[0]
-        fin = open(path.decode() + '/testfolder/yolov7.yaml', 'rt')
+        #fin = open(path.decode() + '/testfolder/yolov7.yaml', 'rt')
+        fin = open(os.path.join(path.decode(), 'testfolder', 'yolov7.yaml'), 'rt')
         data = fin.read()
-        data = data = data.replace('./testfolder', path.decode() + "/testfolder")
+        #data = data = data.replace('./testfolder', path.decode() + "/testfolder")
+        data = data = data.replace('./testfolder', os.path.join(path.decode(), "testfolder"))
         fin.close()
-        fin = open(path.decode() + '/testfolder/yolov7.yaml', 'wt')
+        #fin = open(path.decode() + '/testfolder/yolov7.yaml', 'wt')
+        fin = open(os.path.join(path.decode(), 'testfolder', 'yolov7.yaml'), 'wt')
         fin.write(data)
         fin.close()
         model=None
@@ -208,7 +213,8 @@ def mainPreLoadModel(path):
 
         # Directories
         #model = attempt_load(path + b"/" + modelname + b".pt", map_location=device)  # load FP32 model
-        model = attempt_load(path.decode() + "/testfolder/" + modelname.decode() +  ".pt", map_location=device)
+        #model = attempt_load(path.decode() + "/testfolder/" + modelname.decode() +  ".pt", map_location=device)
+        model = attempt_load(os.path.join(path.decode(), "testfolder", modelname.decode() +  ".pt"), map_location=device)
         gs = max(int(model.stride.max()), 32)  # grid size (max stride)
         imgsz = 1920
         imgsz = check_img_size(imgsz, s=gs)  # check img_size
@@ -223,7 +229,8 @@ def mainPreLoadModel(path):
 
         # Configure
         model.eval()
-        data = path.decode() + '/testfolder/yolov7.yaml'
+        #data = path.decode() + '/testfolder/yolov7.yaml'
+        data = os.path.join(path.decode(), 'testfolder', 'yolov7.yaml')
         if isinstance(data, str):
             is_coco = data.endswith('coco.yaml')
             with open(data) as f:
@@ -233,7 +240,7 @@ def mainPreLoadModel(path):
         nc = 1 if single_cls else int(data['nc'])  # number of classes
         iouv = torch.linspace(0.5, 0.95, 10).to(device)  # iou vector for mAP@0.5:0.95
         niou = iouv.numel()
-
+        
         modelDict['net'] = model
         modelDict['FileExtension'] = "png"
         modelDict['meta'] = device
