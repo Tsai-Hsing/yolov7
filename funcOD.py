@@ -113,12 +113,12 @@ def detect(lib, net, meta, niou, nc, data, imgsz, image, thresh=.5, hier_thresh=
         res = []
         returnval = output_to_target(out)
         for obj in returnval:
-            if len(alltype) == 0:
-                alltype.append(data['names'][int(obj[1])])
-            if data['names'][int(obj[1])] not in alltype:
-                alltype.append(data['names'][int(obj[1])])
             if obj[6] >= 0.25:
                 res.append((data['names'][int(obj[1])], obj[6], (math.floor((obj[2] * 2 - obj[4]) / 2) - shapes[0][1][1][0] , math.floor((obj[3] * 2 - obj[5]) / 2) - shapes[0][1][1][1] , math.ceil((obj[2] * 2 - obj[4]) / 2 + obj[4]) - shapes[0][1][1][0], math.ceil((obj[3] * 2 - obj[5]) / 2 + obj[5]) - shapes[0][1][1][1])))
+                if len(alltype) == 0 :
+                    alltype.append(data['names'][int(obj[1])])
+                if data['names'][int(obj[1])] not in alltype:
+                    alltype.append(data['names'][int(obj[1])])
         return res, alltype
 
 def mainPredict(image, path, modelName, userDict , graph, sess):
