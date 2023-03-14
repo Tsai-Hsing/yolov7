@@ -7,7 +7,7 @@ try:
     resultData = mainPreLoadModel('./testfolder/')
     #mainPredict('','./testfolder/', '' ,xx['result'], '', '')
     im = Image.open('./testfolder/test1_1.png')
-    mainPredict(im, '/content/yolov7/testfolder/' , '', resultData['result'], '', '')
+    return mainPredict(im, '/content/yolov7/testfolder/' , '', resultData['result'], '', '')
     
     #mainPredict(im, './testfoler/' , '', resultData['result'], '', '')
     #mainPredict(im, './testfoler/' , '', resultData['result'], '', '')
