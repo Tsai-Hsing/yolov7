@@ -53,7 +53,9 @@ def detect(lib, net, meta, niou, nc, data, imgsz, image, thresh=.5, hier_thresh=
     #parser.add_argument('--data', type=str, default='testfolder/diamond.yaml', help='*.data path')
     opt = parser.parse_args()
     #imgsz = 1920
-    imgsz = check_img_size(imgsz, s=lib)
+    ow = imgsz[1]
+    oh = imgsz[0]
+    imgsz = check_img_size(imgsz[1], s=lib)
     batch_size = 1
     # Logging
     log_imgs = 0
@@ -114,7 +116,7 @@ def detect(lib, net, meta, niou, nc, data, imgsz, image, thresh=.5, hier_thresh=
         returnval = output_to_target(out)
         for obj in returnval:
             if obj[6] >= 0.25:
-                res.append((data['names'][int(obj[1])], obj[6], (math.floor((obj[2] * 2 - obj[4]) / 2) - shapes[0][1][1][0] , math.floor((obj[3] * 2 - obj[5]) / 2) - shapes[0][1][1][1] , math.ceil((obj[2] * 2 - obj[4]) / 2 + obj[4]) - shapes[0][1][1][0], math.ceil((obj[3] * 2 - obj[5]) / 2 + obj[5]) - shapes[0][1][1][1])))
+                res.append((data['names'][int(obj[1])], obj[6], (math.floor((obj[2] * 2 - obj[4]) / 2) - (width - ow) / 2  , math.floor((obj[3] * 2 - obj[5]) / 2) - (height - oh) / 2 , math.ceil((obj[2] * 2 - obj[4]) / 2 + obj[4]) - (width - ow) / 2 , math.ceil((obj[3] * 2 - obj[5]) / 2 + obj[5]) - (height - oh) / 2)))
                 if len(alltype) == 0 :
                     alltype.append(data['names'][int(obj[1])])
                 if data['names'][int(obj[1])] not in alltype:
@@ -143,7 +145,7 @@ def mainPredict(image, path, modelName, userDict , graph, sess):
         os.system('rm -rf ' + os.path.join(path.decode(), 'testfolder', 'test.cache'))
         image.save(imagepath)
         print(imagepath)
-        imgsz = cv2.imread(imagepath).shape[1]
+        imgsz = cv2.imread(imagepath).shape
         r, alltype = detect(lib, net, meta, niou, nc, mdata, imgsz, bytes(imagepath, 'ascii'))   
         infod = {}
         at = []
